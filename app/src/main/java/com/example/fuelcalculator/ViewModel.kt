@@ -11,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.await
 import timber.log.Timber
+import java.net.URLEncoder
 
 //37.61556,55.75222
 //30.31413,59.93863
@@ -80,32 +81,18 @@ class ViewModel: ViewModel() {
      */
     private fun getCitiesProperties() {
         coroutineScope.launch {
-//            val getPropertiesDeferred = CityApi.retrofitService.getCities()
-            val getPropertiesDeferred = CityApi.retrofitService.getGif()
-            Timber.i("TIMBER olala")
+            val getPropertiesDeferred = CityApi.retrofitService.getCities()
             try {
                 _status.value = CityApiStatus.LOADING
-                Timber.i("TIMBER uuulala")
                 val listResult = getPropertiesDeferred.await()
-                Timber.i("!!!TIMBER VM getPropertiesDeferred: ${listResult.description}")
-
-//                listResult.data?.let {
-//                    _status.value = CityApiStatus.DONE
-//                    _cities.value = it
-//                } ?: let {
-//                    _status.value = CityApiStatus.ERROR
-//                    _cities.value = ArrayList()
-//                }
+                _status.value = CityApiStatus.DONE
+                _cities.value = listResult.results
 
             } catch (e: Exception) {
                 _status.value = CityApiStatus.ERROR
                 _cities.value = ArrayList()
             }
-            Timber.i("---TIMBER VM cities: ${_cities.value?.size}")
-
         }
-
-        Timber.i("///TIMBER 2 VM cities: ${_cities.value?.size}")
     }
 
     private fun getCars(): Array<String>{
