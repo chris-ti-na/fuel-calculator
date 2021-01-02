@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Fuel Calculator</string>
+    <string name="departure_city_label">Город отправления</string>
+    <string name="destination_city_label">Город назначения</string>
+    <string name="car_label">Введите название автомобиля</string>
+    <string name="calculate_button_text">Рассчитать</string>
+</resources>
