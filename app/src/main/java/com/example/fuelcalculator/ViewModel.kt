@@ -36,13 +36,13 @@ class ViewModel: ViewModel() {
     val cars: LiveData<Array<String>>
         get() = _cars
 
-    private val _departureCity = MutableLiveData<String>()
+    private val _departureCity = MutableLiveData<CityProperty>()
 
-    val departureCity: LiveData<String>
+    val departureCity: LiveData<CityProperty>
         get() = _departureCity
 
-    private val _destinationCity = MutableLiveData<String>()
-    val destinationCity: LiveData<String>
+    private val _destinationCity = MutableLiveData<CityProperty>()
+    val destinationCity: LiveData<CityProperty>
         get() = _destinationCity
 
     private val _car = MutableLiveData<String>()
@@ -64,8 +64,6 @@ class ViewModel: ViewModel() {
         //todo как именно лучше инициализировать
         getCitiesProperties()
         _cars.value = getCars()
-        _departureCity.value = ""
-        _destinationCity.value = ""
         _car.value = ""
         _result.value = ""
         _eventResultReceived.value = false
@@ -82,10 +80,12 @@ class ViewModel: ViewModel() {
                 val listResult = getPropertiesDeferred.await()
                 _status.value = CityApiStatus.DONE
                 _cities.value = listResult.results
+                Timber.i("timber result - ${listResult.results}")
 
             } catch (e: Exception) {
                 _status.value = CityApiStatus.ERROR
                 _cities.value = ArrayList()
+                Timber.e("timber error - ${e.message}")
             }
         }
     }
@@ -101,11 +101,11 @@ class ViewModel: ViewModel() {
         _eventResultReceived.value = true
     }
 
-    fun setDeparture(value: String){
+    fun setDeparture(value: CityProperty){
         _departureCity.value = value
     }
 
-    fun setDestination(value: String){
+    fun setDestination(value: CityProperty){
         _destinationCity.value = value
     }
 

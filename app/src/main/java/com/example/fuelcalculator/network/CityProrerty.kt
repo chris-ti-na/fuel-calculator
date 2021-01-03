@@ -1,17 +1,8 @@
 package com.example.fuelcalculator.network
 
-import com.squareup.moshi.Json
-
 class CityProperty (val cityId: Long,
-                    val name: String)
+                    val name: String,
+                    val location: LocationProperty)
 
-class LocationProperty(latitude: Long,
-                       longitude: Long)
-
-data class GifDetails(
-    val id: Long?,
-    val description: String?,
-    val gifUrl: String?,
-    val width: String?,
-    val height: String?
-)
+class LocationProperty(val latitude: Double,
+                       val longitude: Double)
