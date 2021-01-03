@@ -12,7 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.fuelcalculator.databinding.ActivityMainBinding
-import com.example.fuelcalculator.network.CityProperty
+import com.example.fuelcalculator.network.city.CityProperty
 import timber.log.Timber
 import java.util.*
 

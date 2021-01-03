@@ -1,10 +1,9 @@
-package com.example.fuelcalculator.network
+package com.example.fuelcalculator.network.city
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -33,7 +32,8 @@ interface CityApiService {
     fun getCities(@Query("limit") limit: String = "50",
                   @Query("order") order: String = "-population",
                   @Query("keys") keys : String = "name,location,cityId",
-                  @Query("where") where: String = whereCondition): Deferred<CityResponse>
+                  @Query("where") where: String = whereCondition
+    ): Deferred<CityResponse>
 }
 
 object CityApi {

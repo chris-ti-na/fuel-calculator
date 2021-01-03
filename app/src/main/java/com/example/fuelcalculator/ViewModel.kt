@@ -3,15 +3,13 @@ package com.example.fuelcalculator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fuelcalculator.network.CityApi
-import com.example.fuelcalculator.network.CityProperty
+import com.example.fuelcalculator.network.city.CityApi
+import com.example.fuelcalculator.network.city.CityProperty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.await
 import timber.log.Timber
-import java.net.URLEncoder
 
 //37.61556,55.75222
 //30.31413,59.93863
