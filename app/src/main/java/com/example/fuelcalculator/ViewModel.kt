@@ -71,11 +71,6 @@ class ViewModel: ViewModel() {
         _eventResultReceived.value = false
     }
 
-//    private fun getCities(): Array<String>{
-//        //todo доработать инициализацию списка
-//        return arrayOf("Moscow", "Tula", "Kaluga", "Tver", "Samara", "Saratov", "St. P", "Sochi")
-//    }
-
     /**
      * Sets the value of the status LiveData to the Mars API status.
      */
