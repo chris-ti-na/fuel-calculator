@@ -5,26 +5,31 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fuelcalculator.network.city.CityApi
 import com.example.fuelcalculator.network.city.CityProperty
+import com.example.fuelcalculator.network.distance.DistanceApi
+import com.example.fuelcalculator.network.distance.createJsonRequestBody
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody
+import org.json.JSONObject
 import timber.log.Timber
+import kotlin.collections.ArrayList
 
-//37.61556,55.75222
-//30.31413,59.93863
-//[[30.31413,59.93863],[37.61556,55.75222]]
+enum class CityApiStatus { LOADING, ERROR, DONE }
+enum class DistanceApiStatus { LOADING, ERROR, DONE }
 
-enum class CityApiStatus{ LOADING, ERROR, DONE}
+class ViewModel : ViewModel() {
 
-class ViewModel: ViewModel() {
+    // status of the most recent request to the City Api
+    private val _cityApiStatus = MutableLiveData<CityApiStatus>()
+    val cityApiStatus: LiveData<CityApiStatus>
+        get() = _cityApiStatus
 
-    // The internal MutableLiveData String that stores the status of the most recent request
-    private val _status = MutableLiveData<CityApiStatus>()
-
-    // The external immutable LiveData for the request status String
-    val status: LiveData<CityApiStatus>
-        get() = _status
+    // status of the most recent request to the Distance Api
+    private val _distanceApiStatus = MutableLiveData<DistanceApiStatus>()
+    val distanceApiStatus: LiveData<DistanceApiStatus>
+        get() = _distanceApiStatus
 
     private val _cities = MutableLiveData<List<CityProperty>>()
     val cities: LiveData<List<CityProperty>>
@@ -35,7 +40,6 @@ class ViewModel: ViewModel() {
         get() = _cars
 
     private val _departureCity = MutableLiveData<CityProperty>()
-
     val departureCity: LiveData<CityProperty>
         get() = _departureCity
 
@@ -46,6 +50,10 @@ class ViewModel: ViewModel() {
     private val _car = MutableLiveData<String>()
     val car: LiveData<String>
         get() = _car
+
+    private val _distance = MutableLiveData<Double>()
+    val distance: LiveData<Double>
+        get() = _distance
 
     private val _result = MutableLiveData<String>()
     val result: LiveData<String>
@@ -67,47 +75,74 @@ class ViewModel: ViewModel() {
         _eventResultReceived.value = false
     }
 
-    /**
-     * Sets the value of the status LiveData to the Mars API status.
-     */
     private fun getCitiesProperties() {
         coroutineScope.launch {
             val getPropertiesDeferred = CityApi.retrofitService.getCities()
             try {
-                _status.value = CityApiStatus.LOADING
+                _cityApiStatus.value = CityApiStatus.LOADING
                 val listResult = getPropertiesDeferred.await()
-                _status.value = CityApiStatus.DONE
+                _cityApiStatus.value = CityApiStatus.DONE
                 _cities.value = listResult.results
-                Timber.i("timber result - ${listResult.results}")
+                Timber.i("timber cities result - ${listResult.results}")
 
             } catch (e: Exception) {
-                _status.value = CityApiStatus.ERROR
+                _cityApiStatus.value = CityApiStatus.ERROR
                 _cities.value = ArrayList()
-                Timber.e("timber error - ${e.message}")
+                Timber.e("timber cities error - ${e.message} ")
             }
         }
     }
 
-    private fun getCars(): Array<String>{
+    private fun getCars(): Array<String> {
         //todo доработать инициализацию списка
         return arrayOf("Mercedes", "Audi", "Jeep", "Volkswagen", "BMW")
     }
 
-    fun loadResult(){
-        //todo запрос и формирование результата
-        _result.value = "${_departureCity.value} -- ${_destinationCity.value} -- ${_car.value}"
+    fun loadResult() {
+//        todo запрос и формирование результата
+//         загрузить расстояние (done)
+//         загрузить данные о машине
+//         рассчитать результат
+        getDistance()
+
+        _result.value =
+            "${_departureCity.value?.name} -- ${_destinationCity.value?.name} -- ${_car.value} : ${_distance.value}"
         _eventResultReceived.value = true
     }
 
-    fun setDeparture(value: CityProperty){
+    private fun getDistance() {
+        coroutineScope.launch {
+            val getPropertyDeferred =
+                DistanceApi.retrofitService.getDistance(
+                    createJsonRequestBody(
+                        departureCity,
+                        destinationCity
+                    )
+                )
+            try {
+                _distanceApiStatus.value = DistanceApiStatus.LOADING
+                val listResult = getPropertyDeferred.await()
+                _distanceApiStatus.value = DistanceApiStatus.DONE
+                _distance.value = listResult.distances[0][0]
+                Timber.i("timber distance result - ${_distance.value}")
+
+            } catch (e: Exception) {
+                _distanceApiStatus.value = DistanceApiStatus.ERROR
+                _distance.value = null
+                Timber.e("timber distance error - ${e.message} ")
+            }
+        }
+    }
+
+    fun setDeparture(value: CityProperty) {
         _departureCity.value = value
     }
 
-    fun setDestination(value: CityProperty){
+    fun setDestination(value: CityProperty) {
         _destinationCity.value = value
     }
 
-    fun setCar(value: String){
+    fun setCar(value: String) {
         _car.value = value
     }
 }

@@ -1,1 +1,3 @@
 /build
+/src/androidTest/java/com/example/fuelcalculator/
+/src/test/java/com/example/fuelcalculator/
