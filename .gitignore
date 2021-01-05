@@ -12,3 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
+/app/src/androidTest/java/com/example/fuelcalculator/
+/app/src/test/java/com/example/fuelcalculator/

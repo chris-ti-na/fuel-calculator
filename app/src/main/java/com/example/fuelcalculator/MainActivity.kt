@@ -37,25 +37,18 @@ class MainActivity : AppCompatActivity() {
                 val selectedItem = parent.adapter.getItem(position) as CityProperty
                 viewModel.setDeparture(selectedItem)
                 binding.departureTextView.setText(selectedItem.name)
-                Timber.i("timber ${viewModel.departureCity.value?.cityId} ${viewModel.departureCity.value?.name} ${viewModel.departureCity.value?.location?.latitude} ${viewModel.departureCity.value?.location?.longitude}")
             }
 
             binding.destinationTextView.setOnItemClickListener { parent, _, position, id ->
                 val selectedItem = parent.adapter.getItem(position) as CityProperty
                 viewModel.setDestination(selectedItem)
                 binding.destinationTextView.setText(selectedItem.name)
-                Timber.i("timber ${viewModel.destinationCity.value?.cityId} ${viewModel.destinationCity.value?.name} ${viewModel.destinationCity.value?.location?.latitude} ${viewModel.destinationCity.value?.location?.longitude}")
-
             }
         })
 
         viewModel.cars.observe(this, Observer { cars ->
             binding.carTextView.setAdapter(
-                ArrayAdapter(
-                    this,
-                    android.R.layout.select_dialog_item,
-                    cars
-                )
+                ArrayAdapter(this, android.R.layout.select_dialog_item, cars)
             )
 
             binding.carTextView.setOnItemClickListener { parent, _, position, id ->
@@ -77,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         private val allCities: List<CityProperty>
     ) : ArrayAdapter<CityProperty>(context, layoutResource, allCities),
         Filterable {
-        private var mCities : List<CityProperty> = allCities
+        private var mCities: List<CityProperty> = allCities
 
         override fun getCount(): Int {
             return mCities.size
@@ -92,25 +85,29 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view : TextView = convertView as TextView? ?: LayoutInflater.from(context).inflate(layoutResource, parent, false) as TextView
+            val view: TextView = convertView as TextView? ?: LayoutInflater.from(context)
+                .inflate(layoutResource, parent, false) as TextView
             view.text = mCities[position].name
             return view
         }
 
         override fun getFilter(): Filter {
-            return object : Filter(){
+            return object : Filter() {
                 override fun performFiltering(charSequence: CharSequence?): FilterResults {
                     val queryString = charSequence.toString().toLowerCase(Locale.ROOT)
 
                     val filterResults = FilterResults()
-                    filterResults.values = if(queryString.isEmpty())
+                    filterResults.values = if (queryString.isEmpty())
                         allCities
-                    else allCities.filter { it.name.toLowerCase(Locale.ROOT).contains(queryString)}
+                    else allCities.filter { it.name.toLowerCase(Locale.ROOT).contains(queryString) }
 
                     return filterResults
                 }
 
-                override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults?) {
+                override fun publishResults(
+                    charSequence: CharSequence?,
+                    filterResults: FilterResults?
+                ) {
                     mCities = filterResults?.values as List<CityProperty>
                     notifyDataSetChanged()
                 }

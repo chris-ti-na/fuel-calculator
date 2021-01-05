@@ -59,6 +59,10 @@ class ViewModel : ViewModel() {
     val result: LiveData<String>
         get() = _result
 
+    private val _eventDistanceReceived = MutableLiveData<Boolean>()
+    val eventDistanceReceived: LiveData<Boolean>
+        get() = _eventDistanceReceived
+
     private val _eventResultReceived = MutableLiveData<Boolean>()
     val eventResultReceived: LiveData<Boolean>
         get() = _eventResultReceived
@@ -70,9 +74,6 @@ class ViewModel : ViewModel() {
         //todo как именно лучше инициализировать
         getCitiesProperties()
         _cars.value = getCars()
-        _car.value = ""
-        _result.value = ""
-        _eventResultReceived.value = false
     }
 
     private fun getCitiesProperties() {
@@ -105,30 +106,29 @@ class ViewModel : ViewModel() {
 //         рассчитать результат
         getDistance()
 
-        _result.value =
-            "${_departureCity.value?.name} -- ${_destinationCity.value?.name} -- ${_car.value} : ${_distance.value}"
-        _eventResultReceived.value = true
+//        _result.value =
+//            "${_departureCity.value?.name} -- ${_destinationCity.value?.name} -- ${_car.value} : ${_distance.value}"
+//        _eventResultReceived.value = true
     }
 
     private fun getDistance() {
         coroutineScope.launch {
             val getPropertyDeferred =
                 DistanceApi.retrofitService.getDistance(
-                    createJsonRequestBody(
-                        departureCity,
-                        destinationCity
-                    )
+                    createJsonRequestBody(departureCity, destinationCity)
                 )
             try {
                 _distanceApiStatus.value = DistanceApiStatus.LOADING
                 val listResult = getPropertyDeferred.await()
                 _distanceApiStatus.value = DistanceApiStatus.DONE
                 _distance.value = listResult.distances[0][0]
+                _eventDistanceReceived.value = true
                 Timber.i("timber distance result - ${_distance.value}")
 
             } catch (e: Exception) {
                 _distanceApiStatus.value = DistanceApiStatus.ERROR
                 _distance.value = null
+                _eventDistanceReceived.value = false
                 Timber.e("timber distance error - ${e.message} ")
             }
         }

@@ -2,7 +2,6 @@ package com.example.fuelcalculator.network.distance
 
 import androidx.lifecycle.LiveData
 import com.example.fuelcalculator.network.city.CityProperty
-import com.example.fuelcalculator.network.city.LocationProperty
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -13,12 +12,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.*
-import timber.log.Timber
 
 
 //The expected order for all coordinates arrays is [lon, lat]
-//All timings are in seconds
-//All distances are in meters
+//All default timings are in seconds
+//All default distances are in meters
 
 //37.61556,55.75222 - msk
 //30.31413,59.93863 - s.p.
@@ -30,8 +28,6 @@ private const val BASE_URL = "https://api.openrouteservice.org/"
 private const val HEADER_AUTHORIZATION =
     "Authorization: 5b3ce3597851110001cf62480c9edafa6baa41289fffbc4d6ad731c4"
 private const val HEADER_CONTENT_TYPE = "Content-Type: application/json; charset=utf-8"
-private const val HEADER_ACCEPT =
-    "Accept: application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
 
 private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
@@ -60,8 +56,7 @@ fun createJsonRequestBody(
     destination: LiveData<CityProperty>
 ): RequestBody {
     //{"locations":[[50.15,53.20007],[37.61556,55.75222]],"destinations":[1],"id":"matrix","metrics":["distance"],"sources":[0],"units":"km"}
-
-    val res = mapOf(
+    val body = mapOf(
         "id" to "matrix",
         "metrics" to arrayListOf("distance"),
         "sources" to arrayListOf(0),
@@ -78,16 +73,8 @@ fun createJsonRequestBody(
         )
     )
 
-    Timber.i("timber ===== %s", res)
-
     return RequestBody.create(
         okhttp3.MediaType.parse("application/json; charset=utf-8"),
-        JSONObject(res).toString()
+        JSONObject(body).toString()
     )
 }
-
-//@Field("metrics") metrics: String = "[\"distance\"]",
-//@Field("locations") locations: String = "[[30.31413,59.93863],[37.61556,55.75222]]",
-//@Field("sources") sources: String = "[0]",
-//@Field("destinations") destinations: String = "[1]",
-//@Field("units") units: String = "km"
