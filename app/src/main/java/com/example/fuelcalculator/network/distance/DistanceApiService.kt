@@ -48,33 +48,37 @@ object DistanceApi {
 interface DistanceApiService {
     @Headers(HEADER_AUTHORIZATION, HEADER_CONTENT_TYPE)
     @POST("v2/matrix/driving-car")
-    fun getDistance(@Body params: RequestBody): Deferred<DistanceResponse>
+    fun getDistance(@Body params: RequestBody?): Deferred<DistanceResponse>
 }
 
 fun createJsonRequestBody(
     departure: LiveData<CityProperty>,
     destination: LiveData<CityProperty>
-): RequestBody {
+): RequestBody? {
     //{"locations":[[50.15,53.20007],[37.61556,55.75222]],"destinations":[1],"id":"matrix","metrics":["distance"],"sources":[0],"units":"km"}
-    val body = mapOf(
-        "id" to "matrix",
-        "metrics" to arrayListOf("distance"),
-        "sources" to arrayListOf(0),
-        "destinations" to arrayListOf(1),
-        "units" to "km",
-        "locations" to arrayListOf<List<Double?>>(
-            arrayListOf(
-                departure.value?.location?.longitude,
-                departure.value?.location?.latitude
-            ), arrayListOf(
-                destination.value?.location?.longitude,
-                destination.value?.location?.latitude
+    if (departure.value != null && destination.value != null) {
+        val body = mapOf(
+            "id" to "matrix",
+            "metrics" to arrayListOf("distance"),
+            "sources" to arrayListOf(0),
+            "destinations" to arrayListOf(1),
+            "units" to "km",
+            "locations" to arrayListOf<List<Double?>>(
+                arrayListOf(
+                    departure.value?.location?.longitude,
+                    departure.value?.location?.latitude
+                ), arrayListOf(
+                    destination.value?.location?.longitude,
+                    destination.value?.location?.latitude
+                )
             )
         )
-    )
 
-    return RequestBody.create(
-        okhttp3.MediaType.parse("application/json; charset=utf-8"),
-        JSONObject(body).toString()
-    )
+        return RequestBody.create(
+            okhttp3.MediaType.parse("application/json; charset=utf-8"),
+            JSONObject(body).toString()
+        )
+    } else {
+        throw IllegalArgumentException("Departure and/or destination cities are null!")
+    }
 }

@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.IllegalArgumentException
 import kotlin.collections.ArrayList
 
 enum class CityApiStatus { LOADING, ERROR, DONE }
@@ -110,11 +111,9 @@ class ViewModel : ViewModel() {
 
     private fun getDistance() {
         coroutineScope.launch {
-            val getPropertyDeferred =
-                DistanceApi.retrofitService.getDistance(
-                    createJsonRequestBody(departureCity, destinationCity)
-                )
             try {
+                val getPropertyDeferred = DistanceApi.retrofitService
+                    .getDistance(createJsonRequestBody(departureCity, destinationCity))
                 _distanceApiStatus.value = DistanceApiStatus.LOADING
                 val listResult = getPropertyDeferred.await()
                 _distanceApiStatus.value = DistanceApiStatus.DONE
