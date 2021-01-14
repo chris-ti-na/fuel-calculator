@@ -15,8 +15,8 @@ import retrofit2.http.Query
 private const val BASE_URL = "https://parseapi.back4app.com/"
 val whereCondition = """{"country": {"__type": "Pointer","className": "Continentscountriescities_Country","objectId": "vg1c2CxgQ3"}}"""
 
-private const val HEADER_APPLICATION_ID = "X-Parse-Application-Id: qPg5uVkfiC7bTJLvmvSlmHZjFIte9cSvmLlEE2by"
-private const val HEADER_CLIENT_KEY = "X-Parse-REST-API-Key: SKpwauX1OzT4xInAwOaP65knVvtBQjpEz784Ajbj"
+private const val HEADER_APPLICATION_ID = "X-Parse-Application-Id: 54euR4X8vK4KjHAE9CRCNcqULGLeQtONviy5Hfar"
+private const val HEADER_CLIENT_KEY = "X-Parse-REST-API-Key: ScKhdfV5wm2gqVjehDOGCjpdcgSTeM1QTGWqFvgE"
 
 private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
@@ -29,7 +29,7 @@ private val retrofit = Retrofit.Builder()
 interface CityApiService {
     @Headers(HEADER_APPLICATION_ID, HEADER_CLIENT_KEY)
     @GET("classes/Continentscountriescities_City?")
-    fun getCities(@Query("limit") limit: String = "50",
+    fun getCities(@Query("limit") limit: String = "50", //todo изменить ограничение на количество городов
                   @Query("order") order: String = "-population",
                   @Query("keys") keys : String = "name,location,cityId",
                   @Query("where") where: String = whereCondition
