@@ -7,12 +7,12 @@ import com.example.fuelcalculator.network.city.CityApi
 import com.example.fuelcalculator.network.city.CityProperty
 import com.example.fuelcalculator.network.distance.DistanceApi
 import com.example.fuelcalculator.network.distance.createJsonRequestBody
+import com.example.fuelcalculator.network.fuel.FuelService
+import com.example.fuelcalculator.network.fuel.FuelService.loadPrices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import okhttp3.RequestBody
-import org.json.JSONObject
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
@@ -71,9 +71,9 @@ class ViewModel : ViewModel() {
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
-        //todo как именно лучше инициализировать
         getCitiesProperties()
-        _cars.value = getCars()
+        getCars()
+        loadPrices()
     }
 
     private fun getCitiesProperties() {
@@ -84,7 +84,7 @@ class ViewModel : ViewModel() {
                 val listResult = getPropertiesDeferred.await()
                 _cityApiStatus.value = CityApiStatus.DONE
                 _cities.value = listResult.results
-                Timber.i("timber cities result - ${listResult.results}")
+                Timber.i("timber cities result - ${listResult.results?.size}")
 
             } catch (e: Exception) {
                 _cityApiStatus.value = CityApiStatus.ERROR
@@ -94,21 +94,18 @@ class ViewModel : ViewModel() {
         }
     }
 
-    private fun getCars(): Array<String> {
+    private fun getCars() {
         //todo доработать инициализацию списка
-        return arrayOf("Mercedes", "Audi", "Jeep", "Volkswagen", "BMW")
+        _cars.value = arrayOf("Mercedes", "Audi", "Jeep", "Volkswagen", "BMW")
     }
 
     fun loadResult() {
 //        todo запрос и формирование результата
 //         загрузить расстояние (done)
 //         загрузить данные о машине
+//         получить стоимость топлива (done)
 //         рассчитать результат
         getDistance()
-
-//        _result.value =
-//            "${_departureCity.value?.name} -- ${_destinationCity.value?.name} -- ${_car.value} : ${_distance.value}"
-//        _eventResultReceived.value = true
     }
 
     private fun getDistance() {
