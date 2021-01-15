@@ -77,12 +77,6 @@ class ViewModel : ViewModel() {
     }
 
     fun loadResult() {
-//        todo запрос и формирование результата
-//         загрузить расстояние (done)
-//         загрузить данные о машине (done)
-//         получить стоимость топлива (done)
-//         рассчитать результат
-
         runBlocking { getDistance() }
 
         if (_car.value != null && _car.value?.second != null && _distance.value != null) {
@@ -106,7 +100,7 @@ class ViewModel : ViewModel() {
         async {
             try {
                 val getPropertyDeferred = DistanceApi.retrofitService
-                    .getDistance(createJsonRequestBody(departureCity, destinationCity))
+                    .getDistance(createJsonRequestBody(_departureCity, _destinationCity))
                 val listResult = getPropertyDeferred.await()
                 _distance.value = listResult.distances[0][0]
                 Timber.i("timber distance result - ${_distance.value}")
