@@ -33,13 +33,13 @@ class MainActivity : AppCompatActivity() {
             binding.departureTextView.setAdapter(cityAdapter)
             binding.destinationTextView.setAdapter(cityAdapter)
 
-            binding.departureTextView.setOnItemClickListener { parent, _, position, id ->
+            binding.departureTextView.setOnItemClickListener { parent, _, position, _ ->
                 val selectedItem = parent.adapter.getItem(position) as CityProperty
                 viewModel.setDeparture(selectedItem)
                 binding.departureTextView.setText(selectedItem.name)
             }
 
-            binding.destinationTextView.setOnItemClickListener { parent, _, position, id ->
+            binding.destinationTextView.setOnItemClickListener { parent, _, position, _ ->
                 val selectedItem = parent.adapter.getItem(position) as CityProperty
                 viewModel.setDestination(selectedItem)
                 binding.destinationTextView.setText(selectedItem.name)
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.cars.observe(this, Observer { cars ->
             binding.carTextView.setAdapter(
-                ArrayAdapter(this, android.R.layout.select_dialog_item, cars)
+                ArrayAdapter(this, android.R.layout.select_dialog_item, cars.keys.toList())
             )
 
-            binding.carTextView.setOnItemClickListener { parent, _, position, id ->
+            binding.carTextView.setOnItemClickListener { parent, _, position, _ ->
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 viewModel.setCar(selectedItem)
             }

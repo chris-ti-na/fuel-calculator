@@ -3,18 +3,17 @@ package com.example.fuelcalculator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.fuelcalculator.network.car.CarService.loadCars
 import com.example.fuelcalculator.network.city.CityApi
 import com.example.fuelcalculator.network.city.CityProperty
 import com.example.fuelcalculator.network.distance.DistanceApi
 import com.example.fuelcalculator.network.distance.createJsonRequestBody
-import com.example.fuelcalculator.network.fuel.FuelService
 import com.example.fuelcalculator.network.fuel.FuelService.loadPrices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import kotlin.collections.ArrayList
 
 enum class CityApiStatus { LOADING, ERROR, DONE }
@@ -36,8 +35,8 @@ class ViewModel : ViewModel() {
     val cities: LiveData<List<CityProperty>>
         get() = _cities
 
-    private val _cars = MutableLiveData<Array<String>>()
-    val cars: LiveData<Array<String>>
+    private val _cars = MutableLiveData<Map<String, Double>>()
+    val cars: LiveData<Map<String, Double>>
         get() = _cars
 
     private val _departureCity = MutableLiveData<CityProperty>()
@@ -48,8 +47,8 @@ class ViewModel : ViewModel() {
     val destinationCity: LiveData<CityProperty>
         get() = _destinationCity
 
-    private val _car = MutableLiveData<String>()
-    val car: LiveData<String>
+    private val _car = MutableLiveData<Pair<String, Double>>()
+    val car: LiveData<Pair<String, Double>>
         get() = _car
 
     private val _distance = MutableLiveData<Double>()
@@ -96,14 +95,13 @@ class ViewModel : ViewModel() {
     }
 
     private fun getCars() {
-        //todo доработать инициализацию списка
-        _cars.value = arrayOf("Mercedes", "Audi", "Jeep", "Volkswagen", "BMW")
+        _cars.value = loadCars()
     }
 
     fun loadResult() {
 //        todo запрос и формирование результата
 //         загрузить расстояние (done)
-//         загрузить данные о машине
+//         загрузить данные о машине (done)
 //         получить стоимость топлива (done)
 //         рассчитать результат
         getDistance()
@@ -138,7 +136,7 @@ class ViewModel : ViewModel() {
         _destinationCity.value = value
     }
 
-    fun setCar(value: String) {
-        _car.value = value
+    fun setCar(carKey : String) {
+        _car.value = Pair(carKey, _cars.value?.get(carKey) ?: error("There is no value for car $carKey"))
     }
 }
