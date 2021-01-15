@@ -8,28 +8,13 @@ import com.example.fuelcalculator.network.city.CityApi
 import com.example.fuelcalculator.network.city.CityProperty
 import com.example.fuelcalculator.network.distance.DistanceApi
 import com.example.fuelcalculator.network.distance.createJsonRequestBody
+import com.example.fuelcalculator.network.fuel.FuelService
 import com.example.fuelcalculator.network.fuel.FuelService.loadPrices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
-enum class CityApiStatus { LOADING, ERROR, DONE }
-enum class DistanceApiStatus { LOADING, ERROR, DONE }
-
 class ViewModel : ViewModel() {
-
-    // status of the most recent request to the City Api
-    private val _cityApiStatus = MutableLiveData<CityApiStatus>()
-    val cityApiStatus: LiveData<CityApiStatus>
-        get() = _cityApiStatus
-
-    // status of the most recent request to the Distance Api
-    private val _distanceApiStatus = MutableLiveData<DistanceApiStatus>()
-    val distanceApiStatus: LiveData<DistanceApiStatus>
-        get() = _distanceApiStatus
 
     private val _cities = MutableLiveData<List<CityProperty>>()
     val cities: LiveData<List<CityProperty>>
@@ -55,13 +40,9 @@ class ViewModel : ViewModel() {
     val distance: LiveData<Double>
         get() = _distance
 
-    private val _result = MutableLiveData<String>()
-    val result: LiveData<String>
+    private val _result = MutableLiveData<DoubleArray>()
+    val result: LiveData<DoubleArray>
         get() = _result
-
-    private val _eventDistanceReceived = MutableLiveData<Boolean>()
-    val eventDistanceReceived: LiveData<Boolean>
-        get() = _eventDistanceReceived
 
     private val _eventResultReceived = MutableLiveData<Boolean>()
     val eventResultReceived: LiveData<Boolean>
@@ -80,14 +61,11 @@ class ViewModel : ViewModel() {
         coroutineScope.launch {
             val getPropertiesDeferred = CityApi.retrofitService.getCities()
             try {
-                _cityApiStatus.value = CityApiStatus.LOADING
                 val listResult = getPropertiesDeferred.await()
-                _cityApiStatus.value = CityApiStatus.DONE
                 _cities.value = listResult.results
                 Timber.i("timber cities result - ${listResult.results?.size}")
 
             } catch (e: Exception) {
-                _cityApiStatus.value = CityApiStatus.ERROR
                 _cities.value = ArrayList()
                 Timber.e("timber cities error - ${e.message} ")
             }
@@ -104,29 +82,41 @@ class ViewModel : ViewModel() {
 //         загрузить данные о машине (done)
 //         получить стоимость топлива (done)
 //         рассчитать результат
-        getDistance()
+
+        runBlocking { getDistance() }
+
+        if (_car.value != null && _car.value?.second != null && _distance.value != null) {
+            // consumption = average consumption [litres per 100 km] * (distance [km] / 100)
+            val consumption = _car.value?.second!! * _distance.value?.div(100)!!
+            // price = result consumption [litres] * fuel price [rubles per liter]
+            val priceA92 = consumption * FuelService.A92
+            val priceA95 = consumption * FuelService.A95
+            val priceA98 = consumption * FuelService.A98
+            val priceDT = consumption * FuelService.DT
+            _result.value = doubleArrayOf(priceA92, priceA95, priceA98, priceDT)
+            _eventResultReceived.value = true
+        }
+        else{
+            throw Exception("Couldn't calculate result value")
+        }
+        Timber.i("timber result ${result.value?.get(0)}")
     }
 
-    private fun getDistance() {
-        coroutineScope.launch {
+    private suspend fun getDistance() = coroutineScope {
+        async {
             try {
                 val getPropertyDeferred = DistanceApi.retrofitService
                     .getDistance(createJsonRequestBody(departureCity, destinationCity))
-                _distanceApiStatus.value = DistanceApiStatus.LOADING
                 val listResult = getPropertyDeferred.await()
-                _distanceApiStatus.value = DistanceApiStatus.DONE
                 _distance.value = listResult.distances[0][0]
-                _eventDistanceReceived.value = true
                 Timber.i("timber distance result - ${_distance.value}")
 
             } catch (e: Exception) {
-                _distanceApiStatus.value = DistanceApiStatus.ERROR
                 _distance.value = null
-                _eventDistanceReceived.value = false
                 Timber.e("timber distance error - ${e.message} ")
             }
         }
-    }
+    }.await()
 
     fun setDeparture(value: CityProperty) {
         _departureCity.value = value
@@ -136,7 +126,8 @@ class ViewModel : ViewModel() {
         _destinationCity.value = value
     }
 
-    fun setCar(carKey : String) {
-        _car.value = Pair(carKey, _cars.value?.get(carKey) ?: error("There is no value for car $carKey"))
+    fun setCar(carKey: String) {
+        _car.value =
+            Pair(carKey, _cars.value?.get(carKey) ?: error("There is no value for car $carKey"))
     }
 }

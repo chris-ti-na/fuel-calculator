@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.eventResultReceived.observe(this, Observer { received ->
             if (received) {
-                binding.resultText.text = viewModel.result.value
+                binding.resultText.text = viewModel.result.value?.get(0).toString()
             }
         })
     }
