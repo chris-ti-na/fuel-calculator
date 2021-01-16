@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.fuelcalculator.databinding.ActivityMainBinding
 import com.example.fuelcalculator.network.city.CityProperty
 import timber.log.Timber
+import java.math.RoundingMode
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -59,9 +60,14 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.eventResultReceived.observe(this, Observer { received ->
             if (received) {
-                binding.resultText.text = viewModel.result.value?.get(0).toString()
+                binding.resultGroup.visibility = View.VISIBLE
+                Timber.i("timber main act ${viewModel.distance.value.toString()}")
             }
         })
+    }
+
+    private fun roundDouble2Decimal(d: Double?): Double?{
+        return d?.toBigDecimal()?.setScale(2, RoundingMode.UP)?.toDouble()
     }
 
     inner class CitiesAdapter(

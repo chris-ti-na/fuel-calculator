@@ -40,9 +40,22 @@ class ViewModel : ViewModel() {
     val distance: LiveData<Double>
         get() = _distance
 
-    private val _result = MutableLiveData<DoubleArray>()
-    val result: LiveData<DoubleArray>
-        get() = _result
+    private val _costA92 = MutableLiveData<Double>()
+    val costA92: LiveData<Double>
+        get() = _costA92
+
+    private val _costA95 = MutableLiveData<Double>()
+    val costA95: LiveData<Double>
+        get() = _costA95
+
+    private val _costA98 = MutableLiveData<Double>()
+    val costA98: LiveData<Double>
+        get() = _costA98
+
+    private val _costDT = MutableLiveData<Double>()
+    val costDT: LiveData<Double>
+        get() = _costDT
+
 
     private val _eventResultReceived = MutableLiveData<Boolean>()
     val eventResultReceived: LiveData<Boolean>
@@ -83,17 +96,16 @@ class ViewModel : ViewModel() {
             // consumption = average consumption [litres per 100 km] * (distance [km] / 100)
             val consumption = _car.value?.second!! * _distance.value?.div(100)!!
             // price = result consumption [litres] * fuel price [rubles per liter]
-            val priceA92 = consumption * FuelService.A92
-            val priceA95 = consumption * FuelService.A95
-            val priceA98 = consumption * FuelService.A98
-            val priceDT = consumption * FuelService.DT
-            _result.value = doubleArrayOf(priceA92, priceA95, priceA98, priceDT)
+            _costA92.value = consumption * FuelService.A92
+            _costA95.value = consumption * FuelService.A95
+            _costA98.value = consumption * FuelService.A98
+            _costDT.value = consumption * FuelService.DT
             _eventResultReceived.value = true
+            Timber.i("timber 1 result costs A92: ${_costA92.value}, A95: ${_costA95.value}, A98: ${_costA98.value}, DT: ${_costDT.value}")
         }
         else{
-            throw Exception("Couldn't calculate result value")
+            throw Exception("Couldn't calculate result costs")
         }
-        Timber.i("timber result ${result.value?.get(0)}")
     }
 
     private suspend fun getDistance() = coroutineScope {

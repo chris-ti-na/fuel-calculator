@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.fuelcalculator.ViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/departureTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,9 +25,9 @@
             android:hint="@string/departure_city_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/destinationTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,9 +39,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/departureTextView"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0" />
 
-        <AutoCompleteTextView xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/carTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,16 +53,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/destinationTextView"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/calculateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/calculate_button_text"
             android:onClick="@{() -> viewModel.loadResult()}"
+            android:text="@string/calculate_button_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -69,20 +70,110 @@
             app:layout_constraintTop_toBottomOf="@+id/carTextView"
             app:layout_constraintVertical_bias="0.0" />
 
-<!--        android:onClick="@{() -> viewModel.loadResult()}"-->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/result_group"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="distance_layout,car_layout,consumption_layout,a92_layout,a95_layout,a98_layout,dt_layout" />
 
-        <TextView
-            android:id="@+id/resultText"
+        <include
+            android:id="@+id/distance_layout"
+            layout="@layout/list_item_result"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:itemLabel='@{"Distance"}'
+            app:itemValue="@{viewModel.distance.toString()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/calculateButton"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
+
+        <include
+            android:id="@+id/car_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:itemLabel='@{"Car"}'
+            app:itemValue="@{viewModel.car.first}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/distance_layout" />
+
+        <include
+            android:id="@+id/consumption_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:itemLabel='@{"Consumption"}'
+            app:itemValue="@{viewModel.costA92.toString()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/car_layout" />
+
+        <include
+            android:id="@+id/a92_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:itemLabel='@{"A92"}'
+            app:itemValue="@{viewModel.costA92.toString()}"
+            app:layout_constraintEnd_toStartOf="@+id/a95_layout"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/consumption_layout" />
+
+        <include
+            android:id="@+id/a95_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:itemLabel='@{"A95"}'
+            app:itemValue="@{viewModel.costA95.toString()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/a92_layout"
+            app:layout_constraintTop_toBottomOf="@+id/consumption_layout" />
+
+        <include
+            android:id="@+id/a98_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:itemLabel='@{"A98"}'
+            app:itemValue="@{viewModel.costA98.toString()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/dt_layout"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/a92_layout" />
+
+        <include
+            android:id="@+id/dt_layout"
+            layout="@layout/list_item_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:itemLabel='@{"DT"}'
+            app:itemValue="@{viewModel.costDT.toString()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/a98_layout"
+            app:layout_constraintTop_toBottomOf="@+id/a95_layout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
