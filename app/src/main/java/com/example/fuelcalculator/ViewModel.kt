@@ -12,6 +12,7 @@ import com.example.fuelcalculator.network.fuel.FuelService
 import com.example.fuelcalculator.network.fuel.FuelService.loadPrices
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.math.RoundingMode
 import kotlin.collections.ArrayList
 
 class ViewModel : ViewModel() {
@@ -96,10 +97,10 @@ class ViewModel : ViewModel() {
             // consumption = average consumption [litres per 100 km] * (distance [km] / 100)
             val consumption = _car.value?.second!! * _distance.value?.div(100)!!
             // price = result consumption [litres] * fuel price [rubles per liter]
-            _costA92.value = consumption * FuelService.A92
-            _costA95.value = consumption * FuelService.A95
-            _costA98.value = consumption * FuelService.A98
-            _costDT.value = consumption * FuelService.DT
+            _costA92.value = roundDouble2Decimal(consumption * FuelService.A92)
+            _costA95.value = roundDouble2Decimal(consumption * FuelService.A95)
+            _costA98.value = roundDouble2Decimal(consumption * FuelService.A98)
+            _costDT.value = roundDouble2Decimal(consumption * FuelService.DT)
             _eventResultReceived.value = true
             Timber.i("timber 1 result costs A92: ${_costA92.value}, A95: ${_costA95.value}, A98: ${_costA98.value}, DT: ${_costDT.value}")
         }
@@ -123,6 +124,10 @@ class ViewModel : ViewModel() {
             }
         }
     }.await()
+
+    private fun roundDouble2Decimal(d: Double?): Double?{
+        return d?.toBigDecimal()?.setScale(2, RoundingMode.UP)?.toDouble()
+    }
 
     fun setDeparture(value: CityProperty) {
         _departureCity.value = value

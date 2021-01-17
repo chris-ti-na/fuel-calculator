@@ -4,4 +4,11 @@
     <string name="destination_city_label">Destination city</string>
     <string name="car_label">Car model</string>
     <string name="calculate_button_text">Calculate</string>
+    <string name="fuel_costs_result_label">Fuel costs</string>
+    <string name="distance_result_label">Distance</string>
+    <string name="consumption_result_label">Average consumption</string>
+    <string name="a92_label">A92</string>
+    <string name="a95_label">A95</string>
+    <string name="a98_label">A98</string>
+    <string name="dt_label">DT</string>
 </resources>

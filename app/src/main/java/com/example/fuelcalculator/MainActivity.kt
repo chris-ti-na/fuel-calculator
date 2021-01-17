@@ -23,9 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
         viewModel = ViewModelProviders.of(this).get(ViewModel::class.java)
         binding.viewModel = viewModel
 
@@ -64,10 +64,6 @@ class MainActivity : AppCompatActivity() {
                 Timber.i("timber main act ${viewModel.distance.value.toString()}")
             }
         })
-    }
-
-    private fun roundDouble2Decimal(d: Double?): Double?{
-        return d?.toBigDecimal()?.setScale(2, RoundingMode.UP)?.toDouble()
     }
 
     inner class CitiesAdapter(

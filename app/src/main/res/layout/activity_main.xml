@@ -72,108 +72,134 @@
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/result_group"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="distance_layout,car_layout,consumption_layout,a92_layout,a95_layout,a98_layout,dt_layout" />
+            android:visibility="gone"
+            app:constraint_referenced_ids="distance_layout,consumption_layout,costsTextView,a92_layout,a95_layout,a98_layout,dt_layout"
+            tools:visibility="visible" />
 
         <include
             android:id="@+id/distance_layout"
             layout="@layout/list_item_result"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:itemLabel='@{"Distance"}'
+            android:layout_marginEnd="8dp"
+            app:itemLabel="@{@string/distance_result_label}"
             app:itemValue="@{viewModel.distance.toString()}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/consumption_layout"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
 
-        <include
-            android:id="@+id/car_layout"
-            layout="@layout/list_item_result"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:itemLabel='@{"Car"}'
-            app:itemValue="@{viewModel.car.first}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/distance_layout" />
+        <!--        <include-->
+        <!--            android:id="@+id/car_layout"-->
+        <!--            layout="@layout/list_item_result"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:layout_marginTop="16dp"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            app:itemLabel='@{"Car"}'-->
+        <!--            app:itemValue="@{viewModel.car.first}"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/distance_layout" />-->
 
         <include
             android:id="@+id/consumption_layout"
             layout="@layout/list_item_result"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:itemLabel='@{"Consumption"}'
-            app:itemValue="@{viewModel.costA92.toString()}"
+            app:itemLabel="@{@string/consumption_result_label}"
+            app:itemValue="@{viewModel.car.second.toString()}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/distance_layout"
+            app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
+
+        <TextView
+            android:id="@+id/costsTextView"
+            style="@style/ResultTextLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/fuel_costs_result_label"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/car_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/consumption_layout" />
 
         <include
             android:id="@+id/a92_layout"
             layout="@layout/list_item_result"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:itemLabel='@{"A92"}'
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            app:itemLabel="@{@string/a92_label}"
             app:itemValue="@{viewModel.costA92.toString()}"
             app:layout_constraintEnd_toStartOf="@+id/a95_layout"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/consumption_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/costsTextView" />
 
         <include
             android:id="@+id/a95_layout"
             layout="@layout/list_item_result"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:itemLabel='@{"A95"}'
+            android:gravity="center"
+            app:itemLabel="@{@string/a95_label}"
             app:itemValue="@{viewModel.costA95.toString()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/a92_layout"
-            app:layout_constraintTop_toBottomOf="@+id/consumption_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/costsTextView" />
 
         <include
             android:id="@+id/a98_layout"
             layout="@layout/list_item_result"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            app:itemLabel='@{"A98"}'
+            android:layout_marginEnd="8dp"
+            app:itemLabel="@{@string/a98_label}"
             app:itemValue="@{viewModel.costA98.toString()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dt_layout"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/a92_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/a92_layout"
+            app:layout_constraintVertical_bias="0.0" />
 
         <include
             android:id="@+id/dt_layout"
             layout="@layout/list_item_result"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:itemLabel='@{"DT"}'
+            app:itemLabel="@{@string/dt_label}"
             app:itemValue="@{viewModel.costDT.toString()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/a98_layout"
-            app:layout_constraintTop_toBottomOf="@+id/a95_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/a95_layout"
+            app:layout_constraintVertical_bias="0.0" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
